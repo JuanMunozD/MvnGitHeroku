@@ -1,13 +1,46 @@
 package com.escuelaing.edu.co.arep.mvngit;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.escuelaing.edu.co.arep.mvngit.controller.ActionController;
+import com.escuelaing.edu.co.arep.mvngit.service.ActionService;
+import spark.Request;
+import spark.Response;
+import static spark.Spark.*;
 
-@SpringBootApplication
+/**
+ * Minimal web app example for Heroku using SparkWeb
+ *
+ * @author daniel
+ */
 public class MvngitApplication {
+    
+    private ActionService gateway;
 
-	public static void main(String[] args) {
-		SpringApplication.run(MvngitApplication.class, args);
-	}
+    /**
+     * This main method uses SparkWeb static methods and lambda functions to
+     * create a simple Hello World web app. It maps the lambda function to the
+     * /hello relative URL.
+     */
+    public static void main(String[] args) {
+        // root is 'src/main/resources', so put files in 'src/main/resources/public'
+        staticFiles.location("/static"); // Static files
+        port(getPort());
+        
+        ActionController controller= new ActionController();
+        
+    }
+
+    /**
+     * This method reads the default port as specified by the PORT variable in
+     * the environment.
+     *
+     * Heroku provides the port automatically so you need this to run the
+     * project on Heroku.
+     */
+    static int getPort() {
+        if (System.getenv("PORT") != null) {
+            return Integer.parseInt(System.getenv("PORT"));
+        }
+        return 8080; //returns default port if heroku-port isn't set (i.e. on localhost)
+    }
 
 }
