@@ -5,14 +5,15 @@
  */
 package com.escuelaing.edu.co.arep.mvngit.service;
 
-import com.escuelaing.edu.co.arep.mvngit.entity.Action;
-
 /**
  *
  * @author Juan Sebastian
  */
 public interface ActionService {
 
-    public Action consultAction(String name);
+    public StringBuffer formResponseIntraDay();
+    public StringBuffer formResponseDay();
+    public StringBuffer formResponseMonth();
+    public StringBuffer formResponseWeek();
     
 }

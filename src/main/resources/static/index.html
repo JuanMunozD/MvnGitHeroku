@@ -1,25 +1,334 @@
 <!DOCTYPE html>
-<html>   
-    <head>   
-        <meta http-equiv='cache-control' content='no-cache' />
-        <meta http-equiv='expires' content='0' />
-        <meta http-equiv='pragma' content='no-cache' />
-        
-        <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
-        <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/p5.min.js"></script>    
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/addons/p5.dom.min.js"></script>     
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/addons/p5.sound.min.js"></script> 
-        <!-- Load babel to translate JSX to js. -->
-        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-        <!-- Load our React component. -->
-        <script src="js/index.jsx?n=1" type="text/babel"></script>     
-        <link rel="stylesheet" type="text/css" href="css/index.css">  
-    </head>  
-    <body>    
+<html>
 
-        <div id="reactFront"></div>
+<head>
+    <title>My page</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+    <script src="https://unpkg.com/react@latest/umd/react.development.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/react-dom@latest/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@material-ui/core@latest/umd/material-ui.development.js"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/babel-standalone@latest/babel.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+        integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Fonts to support Material Design -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <!-- Icons to support Material Design -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    </body>
-     
+
+</head>
+
+<body>
+
+
+    <div id="root"></div>
+    <script type="text/babel">
+
+        const {
+            colors,
+            CssBaseline,
+            ThemeProvider,
+            Typography,
+            Container,
+            makeStyles,
+            createTheme,
+            Box,
+            SvgIcon,
+            Link,
+            Backdrop,
+            Fade,
+            Modal,
+            TextField,
+            DataGrid,
+            TableContainer,
+            Paper,
+            TableHead,
+            Table,
+            TableBody,
+            TableCell,
+            TableRow,
+            TablePagination 
+
+        } = MaterialUI;
+
+        // Create a theme instance.
+        const theme = createTheme({
+            palette: {
+                primary: {
+                    main: '#556cd6',
+                },
+                secondary: {
+                    main: '#19857b',
+                },
+                error: {
+                    main: colors.red.A400,
+                },
+                background: {
+                    default: '#fff',
+                },
+            },
+        });
+
+        const useStyles = makeStyles((theme) => ({
+            modal: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            },
+            paper: {
+                backgroundColor: theme.palette.background.paper,
+                border: '2px solid #000',
+                boxShadow: theme.shadows[5],
+                padding: theme.spacing(2, 4, 3),
+            },
+            table: {
+                minWidth: 650,
+            },
+            root: {
+                width: '100%',
+            },
+            container: {
+                maxHeight: 440,
+            },
+        }));
+
+        function ActionTable(props) {
+            const classes = useStyles();
+            const { data } = props;
+
+            const [page, setPage] = React.useState(0);
+            const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+            const handleChangePage = (event, newPage) => {
+                setPage(newPage);
+            };
+
+            const handleChangeRowsPerPage = (event) => {
+                setRowsPerPage(+event.target.value);
+                setPage(0);
+            };
+
+            const columns = [
+                { id: 'name', label: 'Name', minWidth: 170 },
+                { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
+                {
+                    id: 'population',
+                    label: 'Population',
+                    minWidth: 170,
+                    align: 'right',
+                    format: (value) => value.toLocaleString('en-US'),
+                },
+                {
+                    id: 'size',
+                    label: 'Size\u00a0(km\u00b2)',
+                    minWidth: 170,
+                    align: 'right',
+                    format: (value) => value.toLocaleString('en-US'),
+                },
+                {
+                    id: 'density',
+                    label: 'Density',
+                    minWidth: 170,
+                    align: 'right',
+                    format: (value) => value.toFixed(2),
+                },
+            ];
+
+            function createData(name, code, population, size) {
+                const density = population / size;
+                return { name, code, population, size, density };
+            }
+
+            const rows = [
+                createData('India', 'IN', 1324171354, 3287263),
+                createData('China', 'CN', 1403500365, 9596961),
+                createData('Italy', 'IT', 60483973, 301340),
+                createData('United States', 'US', 327167434, 9833520),
+                createData('Canada', 'CA', 37602103, 9984670),
+                createData('Australia', 'AU', 25475400, 7692024),
+                createData('Germany', 'DE', 83019200, 357578),
+                createData('Ireland', 'IE', 4857000, 70273),
+                createData('Mexico', 'MX', 126577691, 1972550),
+                createData('Japan', 'JP', 126317000, 377973),
+                createData('France', 'FR', 67022000, 640679),
+                createData('United Kingdom', 'GB', 67545757, 242495),
+                createData('Russia', 'RU', 146793744, 17098246),
+                createData('Nigeria', 'NG', 200962417, 923768),
+                createData('Brazil', 'BR', 210147125, 8515767),
+            ];
+            return (
+                <Paper className={classes.root}>
+                    <TableContainer className={classes.container}>
+                        <Table stickyHeader aria-label="sticky table">
+                            <TableHead>
+                                <TableRow>
+                                    {columns.map((column) => (
+                                        <TableCell
+                                            key={column.id}
+                                            align={column.align}
+                                            style={{ minWidth: column.minWidth }}
+                                        >
+                                            {column.label}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                                    return (
+                                        <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                                            {columns.map((column) => {
+                                                const value = row[column.id];
+                                                return (
+                                                    <TableCell key={column.id} align={column.align}>
+                                                        {column.format && typeof value === 'number' ? column.format(value) : value}
+                                                    </TableCell>
+                                                );
+                                            })}
+                                        </TableRow>
+                                    );
+                                })}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <TablePagination
+                        rowsPerPageOptions={[10, 25, 100]}
+                        component="div"
+                        count={rows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Paper>
+            );
+        }
+
+
+        function TransitionsModal(props) {
+            const classes = useStyles();
+            const { title, userAction } = props;
+            const [open, setOpen] = React.useState(false);
+
+            const [data, setData] = React.useState(null);
+
+            const [action, setAction] = React.useState("");
+
+
+            const llamadoAxios = async (x) => {
+
+                axios.get('/action/' + x + "/" + userAction)
+                    .then(response => {
+                        setData(response.data);
+                        console.log(response.data)
+                        setOpen(true);
+
+                    }).catch(e => {
+                        setOpen(false);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Ingrese algo idiota',
+                            icon: 'error',
+                            confirmButtonText: ':D'
+                        })
+                    })
+
+            }
+
+
+            const getApi = (metodo) => {
+
+                if (metodo === 'Intra dia') {
+                    llamadoAxios('interday');
+                } else if (metodo === 'Dia') {
+                    llamadoAxios('day');
+                } else if (metodo === 'Semana') {
+                    llamadoAxios('week');
+                } else if (metodo === 'Mes') {
+                    llamadoAxios('month');
+                }
+
+            };
+
+            const handleOpen = () => {
+                getApi(title)
+            };
+
+            const handleClose = () => {
+                setOpen(false);
+            };
+
+            return (
+                <div>
+                    <button type="button" onClick={handleOpen}>
+                        {title}
+                    </button>
+                    <Modal
+                        aria-labelledby="transition-modal-title"
+                        aria-describedby="transition-modal-description"
+                        className={classes.modal}
+                        open={open}
+                        onClose={handleClose}
+                        closeAfterTransition
+                        BackdropComponent={Backdrop}
+                        BackdropProps={{
+                            timeout: 500,
+                        }}
+                    >
+                        <Fade in={open}>
+                            <div className={classes.paper}>
+                                <h2 id="transition-modal-title">Transition modal</h2>
+                                {data &&
+                                    <ActionTable data />}
+                            </div>
+                        </Fade>
+                    </Modal>
+                </div>
+            );
+        }
+
+
+        function App() {
+
+            const [actionUser, setActionUser] = React.useState("");
+
+            const handlemodel = (e) => {
+                setActionUser(e.target.value)
+            }
+
+            return (
+                <Container maxWidth="sm">
+                    <div style={{ marginTop: 24, }}>
+                        <Typography variant="h4" component="h1" gutterBottom>
+                            Aplicación para la Consulta de Acciones en el Mercado
+                        </Typography>
+
+                        <TextField name='actionUser' id="filled-basic" label="Filled" variant="filled" onChange={handlemodel} />
+
+                        <TransitionsModal userAction={actionUser} title={"Intra dia"} />
+                        <TransitionsModal userAction={actionUser} title={"Dia"} />
+                        <TransitionsModal userAction={actionUser} title={"Semana"} />
+                        <TransitionsModal userAction={actionUser} title={"Mes"} />
+                    </div>
+                </Container>
+            );
+        }
+
+        ReactDOM.render(
+            <ThemeProvider theme={theme}>
+                {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+                <CssBaseline />
+                <App />
+            </ThemeProvider>,
+            document.querySelector('#root'),
+        );
+
+    </script>
+
+</body>
+
 </html>
