@@ -22,10 +22,13 @@ public class FacadeAction {
         this.actionResponseApi = new ActionResponseApi(name, urlApi);
     }
     
-    public StringBuffer consultar() throws ProtocolException, IOException{
+    public void consultar() throws ProtocolException, IOException{
          this.actionResponseApi.consultar();
-         
-         return this.actionResponseApi.getResponseApiData();
     }
+    
+    public StringBuffer obtener() {
+    	return this.actionResponseApi.getResponseApiData();
+    }
+
     
 }

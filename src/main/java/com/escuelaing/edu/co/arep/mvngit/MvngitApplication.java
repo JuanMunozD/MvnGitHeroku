@@ -22,7 +22,7 @@ public class MvngitApplication {
      */
     public static void main(String[] args) {
         // root is 'src/main/resources', so put files in 'src/main/resources/public'
-        staticFiles.location("/static"); // Static files
+        staticFiles.location("public"); // Static files
         port(getPort());
         
         ActionController controller= new ActionController();

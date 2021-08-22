@@ -12,6 +12,13 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <dependencies>
+    	<!-- https://mvnrepository.com/artifact/org.ehcache/ehcache -->
+		<dependency>
+		    <groupId>org.ehcache</groupId>
+		    <artifactId>ehcache</artifactId>
+		    <version>3.9.5</version>
+		</dependency>
+    
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

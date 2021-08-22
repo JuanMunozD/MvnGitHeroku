@@ -5,6 +5,7 @@
  */
 package com.escuelaing.edu.co.arep.mvngit.controller;
 
+import com.escuelaing.edu.co.arep.mvngit.cache.CacheHelper;
 import com.escuelaing.edu.co.arep.mvngit.controller.reponse.StandardResponse;
 import com.escuelaing.edu.co.arep.mvngit.controller.reponse.StatusResponse;
 import com.escuelaing.edu.co.arep.mvngit.facade.FacadeAction;
@@ -12,6 +13,9 @@ import com.escuelaing.edu.co.arep.mvngit.service.AlphaServiceImpl;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+
+import org.ehcache.CacheManager;
+import org.ehcache.config.builders.CacheManagerBuilder;
 import org.json.JSONObject;
 import spark.Request;
 import spark.Response;
@@ -29,13 +33,30 @@ public class ActionController {
 
     FacadeAction facadeAction;
     AlphaServiceImpl alphaService;
+    
+    private CacheHelper cache = new CacheHelper();
 
     public ActionController() {
 
         get("/action/day/:name", (Request req, Response res) -> {
             String name = req.params(":name");
-            facadeAction = new FacadeAction(name, "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + name + "&apikey=CX3DG08ISX9HLJCV");
-            alphaService = new AlphaServiceImpl(facadeAction.consultar());
+            
+            if (cache.getFacadeActionCache().containsKey(name + " day")
+            		&& !cache.getFacadeActionCache().get(name + " day").obtener().toString().contains("Error Message")
+            		&& !cache.getFacadeActionCache().get(name + " day").obtener().toString().contains("Note")
+            		) {
+            	System.out.println("### SI entro cache ");
+            	facadeAction = cache.getFacadeActionCache().get(name + " day");
+            }else {
+            	System.out.println("### NO entro cache ");
+                facadeAction = new FacadeAction(name, "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + name + "&apikey=CX3DG08ISX9HLJCV");
+                // calcular api
+                facadeAction.consultar();
+                // guardar en cache 
+                cache.getFacadeActionCache().put(name + " day", facadeAction);
+            }
+            
+            alphaService = new AlphaServiceImpl(facadeAction.obtener());
 
             JsonParser parser = new JsonParser();
             JsonElement jsonElement = parser.parse(alphaService.formResponseDay().toString());
@@ -48,8 +69,22 @@ public class ActionController {
         
         get("/action/week/:name", (Request req, Response res) -> {
             String name = req.params(":name");
-            facadeAction = new FacadeAction(name, "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=" + name + "&apikey=CX3DG08ISX9HLJCV");
-            alphaService = new AlphaServiceImpl(facadeAction.consultar());
+            
+            if (cache.getFacadeActionCache().containsKey(name + " week")
+            		&& !cache.getFacadeActionCache().get(name + " week").obtener().toString().contains("Error Message")
+            		&& !cache.getFacadeActionCache().get(name + " week").obtener().toString().contains("Note")
+            		) {
+            	System.out.println("### SI entro cache ");
+            	facadeAction = cache.getFacadeActionCache().get(name + " week");
+            }else {
+            	System.out.println("### NO entro cache ");
+            	facadeAction = new FacadeAction(name, "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=" + name + "&apikey=CX3DG08ISX9HLJCV");
+                // calcular api
+                facadeAction.consultar();
+                // guardar en cache 
+                cache.getFacadeActionCache().put(name + " week", facadeAction);
+            }
+            alphaService = new AlphaServiceImpl(facadeAction.obtener());
 
             JsonParser parser = new JsonParser();
             JsonElement jsonElement = parser.parse(alphaService.formResponseDay().toString());
@@ -63,8 +98,23 @@ public class ActionController {
         
         get("/action/month/:name", (Request req, Response res) -> {
             String name = req.params(":name");
-            facadeAction = new FacadeAction(name, "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=" + name + "&apikey=CX3DG08ISX9HLJCV");
-            alphaService = new AlphaServiceImpl(facadeAction.consultar());
+
+            if (cache.getFacadeActionCache().containsKey(name + " month")
+            		&& !cache.getFacadeActionCache().get(name + " month").obtener().toString().contains("Error Message")
+            		&& !cache.getFacadeActionCache().get(name + " month").obtener().toString().contains("Note")
+            		) {
+            	System.out.println("### SI entro cache ");
+            	facadeAction = cache.getFacadeActionCache().get(name + " month");
+            }else {
+            	System.out.println("### NO entro cache ");
+            	facadeAction = new FacadeAction(name, "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=" + name + "&apikey=CX3DG08ISX9HLJCV");
+                // calcular api
+                facadeAction.consultar();
+                // guardar en cache 
+                cache.getFacadeActionCache().put(name + " month", facadeAction);
+            }
+            
+            alphaService = new AlphaServiceImpl(facadeAction.obtener());
 
             JsonParser parser = new JsonParser();
             JsonElement jsonElement = parser.parse(alphaService.formResponseDay().toString());
@@ -77,8 +127,23 @@ public class ActionController {
         
         get("/action/interday/:name", (Request req, Response res) -> {
             String name = req.params(":name");
-            facadeAction = new FacadeAction(name, "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + name + "&interval=1min&apikey=CX3DG08ISX9HLJCV");
-            alphaService = new AlphaServiceImpl(facadeAction.consultar());
+            
+            if (cache.getFacadeActionCache().containsKey(name + " interday")
+            		&& !cache.getFacadeActionCache().get(name + " interday").obtener().toString().contains("Error Message")
+            		&& !cache.getFacadeActionCache().get(name + " interday").obtener().toString().contains("Note")
+            		) {
+            	System.out.println("### SI entro cache ");
+            	facadeAction = cache.getFacadeActionCache().get(name + " interday");
+            }else {
+            	System.out.println("### NO entro cache ");
+            	facadeAction = new FacadeAction(name, "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + name + "&interval=1min&apikey=CX3DG08ISX9HLJCV");
+                // calcular api
+                facadeAction.consultar();
+                // guardar en cache 
+                cache.getFacadeActionCache().put(name + " interday", facadeAction);
+            }
+            
+            alphaService = new AlphaServiceImpl(facadeAction.obtener());
 
             JsonParser parser = new JsonParser();
             JsonElement jsonElement = parser.parse(alphaService.formResponseDay().toString());
